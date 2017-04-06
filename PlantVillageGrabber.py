@@ -15,7 +15,7 @@ def directoryFixer(directory):
                 newDir += ('/')
             print ("Attempting to pass... " + str(newDir))
             directoryFixer(newDir)
-            os.mkdir(directory)
+            os.mkdir(directory) 
 
 def urlDownloader(url,path):
 
