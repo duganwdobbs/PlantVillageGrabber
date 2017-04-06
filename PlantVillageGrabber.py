@@ -1,17 +1,34 @@
 import urllib, csv, string, os, sys
 
-def urlDownloader(url,path):
-
-    directory = os.path.dirname(path)
+def directoryFixer(directory):
+    directory = "".join(str(x) for x in directory)
     try:
         os.stat(directory)
     except:
-        os.mkdir(directory)
+        try:
+            os.mkdir(directory)
+        except:
+            subDir = directory.split('/')
+            newDir = ""
+            for x in range(len(subDir)-1):
+                newDir += (subDir[x])
+                newDir += ('/')
+            print ("Attempting to pass... " + str(newDir))
+            directoryFixer(newDir)
+            os.mkdir(directory)
+
+def urlDownloader(url,path):
+
+    directory = os.path.dirname(path)
+    directoryFixer(directory)
     if not os.path.isfile(path):
         print("Downloading " + url + " to " + path)
         u = urllib.urlretrieve(url,path)
     else:
         print ("File exists.")
+
+CSV_LIST_DIRECTORY = 'CSVs/'
+IMAGE_LIST_DIRECTORY = 'Images/'
 
 CSV_LIST = list()
 CSV_LIST.append('apple_images.csv')
@@ -39,13 +56,16 @@ CSV_LIST.append('strawberry_images.csv')
 CSV_LIST.append('tomato_images.csv')
 CSV_LIST.append('watermelon_images.csv')
 
-newCSV = open('PlantVillageDB.csv','w')
+newCSV_Path = 'CreatedFiles/PlantVillageDB.csv'
+directoryFixer(newCSV_Path.split("/")[0])
+
+newCSV = open(newCSV_Path,'w')
 newCSV.truncate()
 newCSV.write("Plant Name, Disease, Path\n")
 
 for x in range(len(CSV_LIST)):
-    if os.path.isfile(CSV_LIST[x]):
-        with open(CSV_LIST[x], 'r') as fintwo:
+    if os.path.isfile(CSV_LIST_DIRECTORY+CSV_LIST[x]):
+        with open(CSV_LIST_DIRECTORY+CSV_LIST[x], 'r') as fintwo:
             for y in range(8):
                 print (fintwo.readline())
             reader = csv.reader(fintwo,delimiter=',')
@@ -61,10 +81,12 @@ for x in range(len(CSV_LIST)):
                 if not Disease_Common_Name:
                     Disease_Common_Name = 'Healthy'
 
-                path = str(Common_Name) + str("/") + str(Disease_Common_Name) + str("/") + URL_Address.split('/')[-1]
+                path = IMAGE_LIST_DIRECTORY + Common_Name + "/" + Disease_Common_Name + "/" + URL_Address.split('/')[-1]
                 path = path.replace(" ","")
                 path = path.split("?")[0]
 
                 newCSV.write(Common_Name + "," + Disease_Common_Name + "," + path + "\n")
-                
+
                 urlDownloader(URL_Address,path)
+    else:
+        print("FNF")
