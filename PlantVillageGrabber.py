@@ -7,14 +7,11 @@ def urlDownloader(url,path):
         os.stat(directory)
     except:
         os.mkdir(directory)
-
     if not os.path.isfile(path):
         print("Downloading " + url + " to " + path)
         u = urllib.urlretrieve(url,path)
     else:
         print ("File exists.")
-
-
 
 CSV_LIST = list()
 CSV_LIST.append('apple_images.csv')
@@ -67,5 +64,7 @@ for x in range(len(CSV_LIST)):
                 path = str(Common_Name) + str("/") + str(Disease_Common_Name) + str("/") + URL_Address.split('/')[-1]
                 path = path.replace(" ","")
                 path = path.split("?")[0]
+
                 newCSV.write(Common_Name + "," + Disease_Common_Name + "," + path + "\n")
+                
                 urlDownloader(URL_Address,path)
